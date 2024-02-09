@@ -6,6 +6,9 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.kotlinParcelize)
+    alias(libs.plugins.kotlinSerialization)
+    kotlin("kapt")
 }
 
 kotlin {
@@ -35,6 +38,12 @@ kotlin {
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(libs.sqldelight.runtime)
+            implementation(libs.decompose)
+            implementation(libs.decompose.compose)
+            implementation(libs.koin.core)
+            implementation(libs.kotlin.json)
+            implementation(libs.kodein)
+            implementation(libs.kodein.compose)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

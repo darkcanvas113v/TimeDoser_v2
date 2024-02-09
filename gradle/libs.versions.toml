@@ -17,12 +17,14 @@ junit = "4.13.2"
 kotlin = "1.9.21"
 sqldelight = "2.0.1"
 decompose = "2.2.2"
-koin = "3.2.0"
+koin = "3.5.3"
+kodein = "7.21.1"
 
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotlin-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.2" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
@@ -40,10 +42,12 @@ sqldelight-androiddriver = { module = "app.cash.sqldelight:android-driver", vers
 sqldelight-jvmdriver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
-decompose-jetbrains = { module = "com.arkivanov.decompose:extensions-compose-jetbrains", version.ref = "decompose" }
-coin-core = { module = "io.insert-koin:koin-core", version.ref = "koin"}
-coin-test = { module = "io.insert-koin:koin-test", version.ref = "koin"}
-coin-android = { module = "io.insert-koin:koin-android", version.ref = "koin"}
+decompose-compose = { module = "com.arkivanov.decompose:extensions-compose-jetbrains", version.ref = "decompose" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin"}
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin"}
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin"}
+kodein = { module = "org.kodein.di:kodein-di", version.ref = "kodein"}
+kodein-compose = { module = "org.kodein.di:kodein-di-framework-compose", version.ref = "kodein" }
 
 
 [plugins]
@@ -52,3 +56,5 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+kotlinParcelize = { id = 'org.jetbrains.kotlin.plugin.parcelize', version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
