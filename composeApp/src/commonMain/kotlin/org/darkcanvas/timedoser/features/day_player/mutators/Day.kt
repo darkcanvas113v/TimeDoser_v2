@@ -1,4 +1,4 @@
-package org.darkcanvas.timedoser.features.day_player.model_mutators
+package org.darkcanvas.timedoser.features.day_player.mutators
 
 import org.darkcanvas.timedoser.core.util.addItem
 import org.darkcanvas.timedoser.core.util.modifyAt
@@ -32,7 +32,7 @@ fun Day.pause(): Day {
 fun Day.stopTask(): Day {
   val stoppedTask = items[currentTaskPos].stop()
 
-  return copy(items = items.modifyAt(currentTaskPos, stoppedTask)).toNextTask()
+  return copy(items = items.modifyAt(currentTaskPos, stoppedTask)).toNextTask().updateStartTime(currentTaskPos)
 }
 
 fun Day.stop(): Day {
@@ -89,5 +89,27 @@ fun Day.removeTask(taskPos: Int): Day {
 
   return copy(
     items = items.removeItemAt(taskPos)
-  )
+  ).updateStartTime(taskPos)
+}
+
+fun Day.updateStartTime(
+  from: Int
+): Day {
+  if (from == items.size) return this
+
+  val newItems = items.subList(0, from).toMutableList()
+
+  var fromIndex = from
+  if (from == 0) {
+    newItems.add(items[from].copy(startTime = 0L))
+    fromIndex++
+  }
+
+  for (i in fromIndex until items.size) {
+    newItems.add(items[i].copy(
+      startTime = newItems[i-1].run { startTime + duration }
+    ))
+  }
+
+  return copy(items = newItems)
 }

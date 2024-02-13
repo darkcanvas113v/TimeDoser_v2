@@ -7,6 +7,6 @@ import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.singleton
 
-fun createDayDI(): DI =  DI {
+fun createDayDI() = DI.direct {
   bind<DayRepository> { singleton { DayRepositoryImpl() } }
 }

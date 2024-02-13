@@ -35,6 +35,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material)
             implementation(compose.ui)
+            implementation(compose.materialIconsExtended)
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(libs.sqldelight.runtime)
@@ -46,6 +47,7 @@ kotlin {
             implementation(libs.kodein.compose)
         }
         desktopMain.dependencies {
+            implementation(libs.compose.ui.tooling.preview)
             implementation(compose.desktop.currentOs)
             implementation(libs.sqldelight.jvmdriver)
         }

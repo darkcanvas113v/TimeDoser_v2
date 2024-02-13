@@ -1,4 +1,4 @@
-package org.darkcanvas.timedoser.features.day_player.model_mutators
+package org.darkcanvas.timedoser.features.day_player.mutators
 
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 
