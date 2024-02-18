@@ -27,10 +27,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
+import org.darkcanvas.timedoser.features.main_screen.models.TaskUIModel
 
 @Composable
 fun TaskItem(
-  task: Task
+  task: TaskUIModel
 ) {
   Surface(
     elevation = 4.dp,
@@ -66,7 +67,7 @@ fun TaskItem(
         }
 
         Text(
-          text = task.startTime.toString(),
+          text = task.startTime,
           style = MaterialTheme.typography.subtitle1,
           color = MaterialTheme.colors.onPrimary,
           modifier = Modifier
@@ -91,19 +92,19 @@ fun TaskItem(
 
         Box(modifier = Modifier.fillMaxWidth()) {
           Text(
-            text = task.progress.toString(),
+            text = task.progress,
             style = MaterialTheme.typography.caption,
             modifier = Modifier.align(Alignment.CenterStart)
           )
           Text(
-            text = (task.duration - task.progress).toString(),
+            text = task.timeRemaining,
             style = MaterialTheme.typography.caption,
             modifier = Modifier.align(Alignment.CenterEnd)
           )
         }
 
         LinearProgressIndicator(
-          progress = (task.progress.toFloat() / task.duration),
+          progress = task.relativeProgress,
           color = MaterialTheme.colors.primary.copy(alpha = 0.7f),
           modifier = Modifier
             .padding(top = 2.dp)

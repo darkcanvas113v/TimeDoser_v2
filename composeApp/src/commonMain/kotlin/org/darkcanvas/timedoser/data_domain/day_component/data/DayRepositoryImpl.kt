@@ -10,6 +10,7 @@ class DayRepositoryImpl(): DayRepository {
   private val model = MutableStateFlow(Day.DEFAULT)
 
   override fun observe(): Flow<Day> = model
+  override fun peek(): Day = model.value
 
   override fun update(block: (Day) -> Day) {
     model.value = block(model.value)

@@ -83,6 +83,12 @@ fun Day.addTask(task: Task): Day {
   )
 }
 
+fun Day.editTask(task: Task, pos: Int): Day {
+  return copy(
+    items = items.modifyAt(pos, task)
+  ).updateStartTime(pos)
+}
+
 fun Day.removeTask(taskPos: Int): Day {
   if (taskPos < currentTaskPos) return this
   if (taskPos == currentTaskPos && state == Day.State.ACTIVE) return this

@@ -39,9 +39,7 @@ fun App(
         ) {
             when (val child = it.instance) {
                 is RootComponent.Child.MainScreenChild -> MainScreen(
-                    component = child.component,
-                    onAddButtonClick = {},
-                    onItemClick = {}
+                    component = child.component
                 )
             }
         }
