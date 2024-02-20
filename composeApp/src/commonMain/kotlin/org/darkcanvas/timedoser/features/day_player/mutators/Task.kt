@@ -29,7 +29,7 @@ fun Task.disable(): Task {
 }
 
 fun Task.progress(amount: Long): Task {
-  if (progress == 0L) return this
+  if (amount == 0L) return this
 
   val newProgress = progress + amount
 

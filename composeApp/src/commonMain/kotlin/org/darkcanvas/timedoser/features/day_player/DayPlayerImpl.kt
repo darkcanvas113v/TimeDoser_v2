@@ -19,7 +19,7 @@ import org.darkcanvas.timedoser.features.day_player.mutators.stopTask
 class DayPlayerImpl(
   private val dayRepository: DayRepository,
   private val ticker: Ticker,
-  private val ioScope: CoroutineScope
+  ioScope: CoroutineScope
 ): DayPlayer {
 
   init {
@@ -28,17 +28,20 @@ class DayPlayerImpl(
         dayRepository.update { day ->
           day.progress(it)
         }
-        if (dayRepository.observe().last().state == Day.State.COMPLETED)
+        if (dayRepository.peek().state == Day.State.COMPLETED)
           ticker.stop()
       }
     }
   }
 
   override fun play() {
-    dayRepository.update { day ->
-      day.start()
+    val day = dayRepository.peek()
+    if (day.items.isEmpty()) return
+
+    dayRepository.update {
+      it.start()
     }
-    ticker.start(500L)
+    ticker.start(1000L)
   }
 
   override fun stop() {

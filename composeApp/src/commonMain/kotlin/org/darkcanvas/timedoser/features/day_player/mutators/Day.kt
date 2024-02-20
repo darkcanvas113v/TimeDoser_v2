@@ -15,7 +15,7 @@ fun Day.start(): Day {
   return copy(
     state = Day.State.ACTIVE,
     items = items.modifyAt(currentTaskPos, startedTask)
-  )
+  ).updateStartTime(currentTaskPos + 1)
 }
 
 fun Day.pause(): Day {
@@ -78,8 +78,9 @@ fun Day.toNextTask(progressAmount: Long = 0L): Day {
 }
 
 fun Day.addTask(task: Task): Day {
+  val startTime = if (items.isEmpty()) 0L else items.last().run { startTime + duration }
   return copy(
-    items = items.addItem(task)
+    items = items.addItem(task.copy(startTime = startTime))
   )
 }
 
