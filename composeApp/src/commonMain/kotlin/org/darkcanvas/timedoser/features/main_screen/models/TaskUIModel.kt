@@ -2,6 +2,7 @@ package org.darkcanvas.timedoser.features.main_screen.models
 
 import org.darkcanvas.timedoser.core.util.convertMillisToStringFormat
 import org.darkcanvas.timedoser.core.util.convertMillisToStringFormatWithSeconds
+import org.darkcanvas.timedoser.core.util.getLocalTimeFromMillis
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 
 data class TaskUIModel(
@@ -20,10 +21,10 @@ data class TaskUIModel(
 
 fun Task.toUIModel() = TaskUIModel(
   name = name,
-  startTime = convertMillisToStringFormat(startTime),
+  startTime = if (state == Task.State.WAITING) convertMillisToStringFormat(startTime) else getLocalTimeFromMillis(startTime),
   duration = convertMillisToStringFormatWithSeconds(duration),
   state = state,
   progress = convertMillisToStringFormatWithSeconds(progress),
   timeRemaining = convertMillisToStringFormatWithSeconds(duration - progress),
-  relativeProgress = progress.toFloat() /duration
+  relativeProgress = progress.toFloat() / duration
 )

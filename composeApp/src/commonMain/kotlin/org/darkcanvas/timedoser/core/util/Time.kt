@@ -1,5 +1,8 @@
 package org.darkcanvas.timedoser.core.util
 
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 fun convertToMillis(hours: Int, minutes: Int, seconds: Int = 0): Long {
@@ -14,6 +17,13 @@ fun getHoursAndMinutes(timeInMillis: Long): Pair<Int, Int> {
 
   return Pair(hours, minutes)
 }
+
+private val formatter = DateTimeFormatter.ofPattern("HH:mm")
+fun getLocalTimeFromMillis(millis: Long): String {
+  val time = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalTime()
+  return time.format(formatter)
+}
+
 
 fun convertMillisToStringFormat(millis: Long): String {
   val overallMinutes = abs(millis) / 60000

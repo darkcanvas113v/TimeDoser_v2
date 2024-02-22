@@ -11,7 +11,7 @@ data class Task(
   val progress: Long
 ) {
   enum class State {
-    WAITING, ACTIVE, COMPLETED, DISABLED
+    WAITING, PAUSED, ACTIVE, COMPLETED, DISABLED
   }
 
   companion object {
