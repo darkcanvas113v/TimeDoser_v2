@@ -15,5 +15,5 @@ data class DayUIModel(
 fun Day.toUIModel() = DayUIModel(
   state = state,
   currentTaskPos = currentTaskPos,
-  items = items.map { it.toUIModel() }
+  items = items.map { it.toUIModel(state) }
 )
