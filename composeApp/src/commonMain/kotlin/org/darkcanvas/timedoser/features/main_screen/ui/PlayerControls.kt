@@ -39,7 +39,7 @@ fun PlayerControls(
     }
 
     when (dayState) {
-      Day.State.WAITING, Day.State.DISABLED-> {
+      Day.State.WAITING, Day.State.DISABLED, Day.State.COMPLETED -> {
         IconButton(onClick = onPlayButtonClick) {
           Icon(
             imageVector = Icons.Filled.PlayArrow,

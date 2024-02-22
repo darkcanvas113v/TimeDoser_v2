@@ -39,7 +39,7 @@ fun MainScreen(
         onAddButtonClick = component::addTask,
         onPauseButtonClick = component::pause,
         onPlayButtonClick = component::play,
-        onStopButtonClick = component::stop,
+        onStopButtonClick = component::stopCurrentTask,
         dayState = dayState.state
       )
     }

@@ -24,18 +24,22 @@ fun Day.pause(): Day {
   val pausedTask = items[currentTaskPos].pause()
 
   return copy(
-    state = Day.State.WAITING,
+    state = Day.State.DISABLED,
     items = items.modifyAt(currentTaskPos, pausedTask)
   )
 }
 
 fun Day.stopTask(): Day {
+  if (state == Day.State.WAITING) return this
+
   val stoppedTask = items[currentTaskPos].stop()
 
-  return copy(items = items.modifyAt(currentTaskPos, stoppedTask)).toNextTask().updateStartTime(currentTaskPos)
+  return copy(items = items.modifyAt(currentTaskPos, stoppedTask)).toNextTask().updateStartTime(currentTaskPos+1)
 }
 
 fun Day.stop(): Day {
+  if (state == Day.State.WAITING) return this
+
   val stoppedTasks = items.modifyFromTo(currentTaskPos) {
     it.stop()
   }

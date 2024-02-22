@@ -11,7 +11,7 @@ fun Task.start(): Task {
 
 fun Task.pause(): Task {
   return copy(
-    state = Task.State.WAITING
+    state = Task.State.PAUSED
   )
 }
 
