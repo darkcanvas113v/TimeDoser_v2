@@ -1,5 +1,6 @@
 package org.darkcanvas.timedoser.features.task_editor.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -23,10 +24,12 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +43,7 @@ import org.darkcanvas.timedoser.features.notification_channel.LocalNotificationC
 import org.darkcanvas.timedoser.features.notification_channel.NotificationControllerProvider
 import org.darkcanvas.timedoser.features.notification_channel.model.NotificationModel
 import org.darkcanvas.timedoser.features.task_editor.TaskEditorComponent
+import org.darkcanvas.timedoser.features.task_editor.model.TaskEditorErrorState
 
 @Composable
 fun TaskEditor(
@@ -54,6 +58,13 @@ fun TaskEditor(
   }
 
   val notificationController = LocalNotificationController.current
+
+  var taskEditorErrorState by remember { mutableStateOf(TaskEditorErrorState()) }
+
+  LaunchedEffect(task.duration, task.name) {
+    if (task.duration != 0L) taskEditorErrorState = taskEditorErrorState.copy(durationIsZero = false)
+    else if (task.name.isNotBlank()) taskEditorErrorState = taskEditorErrorState.copy(nameIsEmpty = false)
+  }
 
   Dialog(
     onDismissRequest = component::close,
@@ -75,14 +86,27 @@ fun TaskEditor(
             modifier = Modifier.padding(bottom = 16.dp)
           )
 
-          OutlinedTextField(
-            value = task.name,
-            onValueChange = {
-              component.setName(name = it)
-            },
-            label = { Text(text = "Name") },
-            modifier = Modifier.fillMaxWidth()
-          )
+          Column() {
+            OutlinedTextField(
+              value = task.name,
+              onValueChange = {
+                component.setName(name = it)
+              },
+              label = { Text(text = "Name") },
+              modifier = Modifier.fillMaxWidth(),
+              isError = taskEditorErrorState.nameIsEmpty
+            )
+            if (taskEditorErrorState.nameIsEmpty) {
+              Text(
+                text = "Name is empty",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
+              )
+            }
+          }
+
+
 
           Column(
             modifier = Modifier
@@ -97,6 +121,10 @@ fun TaskEditor(
               onClick = {
                 setTimePickerDialogVisibility(true)
               },
+//              backgroundColor = if (taskEditorErrorState.durationIsZero) MaterialTheme.colors.error else MaterialTheme.colors.surface
+              border = BorderStroke(
+                ButtonDefaults.OutlinedBorderSize, if (taskEditorErrorState.durationIsZero) MaterialTheme.colors.error else MaterialTheme.colors.onSurface.copy(alpha = ButtonDefaults.OutlinedBorderOpacity)
+              )
             ) {
               Text(
                 text = convertMillisToStringFormat(task.duration),
@@ -105,6 +133,14 @@ fun TaskEditor(
                 modifier = Modifier
                   .fillMaxWidth()
                   .padding(horizontal = 0.dp, vertical = 8.dp)
+              )
+            }
+            if (taskEditorErrorState.durationIsZero) {
+              Text(
+                text = "Duration is zero",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
               )
             }
           }
@@ -129,14 +165,10 @@ fun TaskEditor(
 
             Button(
               onClick = {
-                when (val result = component.verifyData()) {
-                  is TaskEditorComponent.Result.Error -> {
-                    notificationController.showNotification(NotificationModel(result.msg))
-                  }
-
-                  TaskEditorComponent.Result.Success -> {
-                    component.save()
-                  }
+                when (component.verifyData()) {
+                  TaskEditorComponent.Result.SUCCESS -> component.save()
+                  TaskEditorComponent.Result.ERROR_EMPTY_NAME -> taskEditorErrorState = taskEditorErrorState.copy(nameIsEmpty = true)
+                  TaskEditorComponent.Result.ERROR_DURATION_IS_ZERO -> taskEditorErrorState = taskEditorErrorState.copy(durationIsZero = true)
                 }
               },
               modifier = Modifier.width(90.dp)

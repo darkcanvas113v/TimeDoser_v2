@@ -27,9 +27,9 @@ class DefaultTaskEditorComponent(
 
   override fun verifyData(): TaskEditorComponent.Result {
     return _task.value.run {
-      if (name.isBlank()) TaskEditorComponent.Result.Error("Name cannot be blank")
-      else if (duration == 0L) TaskEditorComponent.Result.Error("Duration cannot be 0")
-      else TaskEditorComponent.Result.Success
+      if (name.isBlank()) TaskEditorComponent.Result.ERROR_EMPTY_NAME
+      else if (duration == 0L) TaskEditorComponent.Result.ERROR_DURATION_IS_ZERO
+      else TaskEditorComponent.Result.SUCCESS
     }
   }
 
