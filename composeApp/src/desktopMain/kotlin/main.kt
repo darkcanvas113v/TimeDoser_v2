@@ -1,6 +1,4 @@
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -8,9 +6,9 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import org.darkcanvas.timedoser.app.App
 import org.darkcanvas.timedoser.app.DefaultRootComponent
 import org.darkcanvas.timedoser.runOnUiThread
-import javax.swing.SwingUtilities
 
 @OptIn(ExperimentalDecomposeApi::class)
 fun main() {

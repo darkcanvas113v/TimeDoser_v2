@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
+import org.darkcanvas.timedoser.features.notification_channel.model.NotificationModel
 
 class DefaultTaskEditorComponent(
   componentContext: ComponentContext,
@@ -25,11 +26,10 @@ class DefaultTaskEditorComponent(
   }
 
   override fun verifyData(): TaskEditorComponent.Result {
-    _task.value.run {
-      if (name.isBlank()) return TaskEditorComponent.Result.Error("Name cannot be blank")
-      if (duration == 0L) return TaskEditorComponent.Result.Error("Duration cannot be 0")
-
-      return TaskEditorComponent.Result.Success
+    return _task.value.run {
+      if (name.isBlank()) TaskEditorComponent.Result.Error("Name cannot be blank")
+      else if (duration == 0L) TaskEditorComponent.Result.Error("Duration cannot be 0")
+      else TaskEditorComponent.Result.Success
     }
   }
 

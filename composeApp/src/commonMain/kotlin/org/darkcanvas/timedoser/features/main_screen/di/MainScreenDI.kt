@@ -3,6 +3,7 @@ package org.darkcanvas.timedoser.features.main_screen.di
 import com.arkivanov.decompose.ComponentContext
 import org.darkcanvas.timedoser.features.main_screen.DefaultMainScreenComponent
 import org.darkcanvas.timedoser.features.main_screen.MainScreenComponent
+import org.darkcanvas.timedoser.features.notification_channel.model.NotificationModel
 import org.kodein.di.DI
 import org.kodein.di.DirectDI
 import org.kodein.di.bindFactory

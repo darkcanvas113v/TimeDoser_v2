@@ -1,29 +1,28 @@
 package org.darkcanvas.timedoser
 
-import App
+import org.darkcanvas.timedoser.app.App
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.defaultComponentContext
 import org.darkcanvas.timedoser.app.DefaultRootComponent
+import org.darkcanvas.timedoser.previews.TestPreview
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val root = DefaultRootComponent(
-            componentContext = defaultComponentContext()
-        )
+    val root = DefaultRootComponent(
+      componentContext = defaultComponentContext()
+    )
+    WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        setContent {
-            MaterialTheme {
-                App(
-                    component = root
-                )
-            }
-        }
+    setContent {
+      MaterialTheme {
+        App(component = root)
+      }
     }
+  }
 }

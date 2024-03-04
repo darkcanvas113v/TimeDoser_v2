@@ -47,7 +47,7 @@ kotlin {
             implementation(libs.kodein.compose)
         }
         desktopMain.dependencies {
-            implementation(libs.compose.ui.tooling.preview)
+//            implementation(libs.compose.ui.tooling.preview)
             implementation(compose.desktop.currentOs)
             implementation(libs.sqldelight.jvmdriver)
         }
