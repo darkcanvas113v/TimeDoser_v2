@@ -5,36 +5,32 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.Serializable
 import org.darkcanvas.timedoser.data_domain.day_component.di.createDayDI
 import org.darkcanvas.timedoser.data_domain.day_component.domain.DayRepository
 import org.darkcanvas.timedoser.features.day_player.di.createDayPlayerDI
-import org.darkcanvas.timedoser.features.main_screen.MainScreenComponent
 import org.darkcanvas.timedoser.features.main_screen.di.createMainScreenDI
-import org.kodein.di.factory
+import org.kodein.di.DirectDI
 import org.kodein.di.instance
-import org.kodein.di.newInstance
 
 class DefaultRootComponent(
-  componentContext: ComponentContext
+  componentContext: ComponentContext,
+  container: AppDIContainer
 ): RootComponent, ComponentContext by componentContext {
   private val navigation = StackNavigation<Config>()
 
-  private val scope = CoroutineScope(Dispatchers.IO)
+  override val scope = CoroutineScope(Dispatchers.IO)
 
-  private val dayDI = createDayDI()
-  private val dayPlayerDI = createDayPlayerDI(
-    dayRepository = dayDI.instance<DayRepository>(),
-    ioScope = scope
-  )
+  private val dayDI = container.dayDI
+  private val dayPlayerDI = container.dayPlayerDI
+
   private val mainScreenDI = createMainScreenDI(
     dayDI = dayDI,
     dayPlayerDI = dayPlayerDI
   )
+
 
   override val stack: Value<ChildStack<*, RootComponent.Child>> =
     childStack(

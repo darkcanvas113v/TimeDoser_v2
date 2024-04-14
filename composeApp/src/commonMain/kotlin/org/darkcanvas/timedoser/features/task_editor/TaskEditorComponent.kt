@@ -12,8 +12,7 @@ interface TaskEditorComponent {
   fun save()
   fun close()
 
-  sealed interface Result {
-    data object Success: Result
-    class Error(val msg: String): Result
+  enum class Result {
+    SUCCESS, ERROR_EMPTY_NAME, ERROR_DURATION_IS_ZERO
   }
 }

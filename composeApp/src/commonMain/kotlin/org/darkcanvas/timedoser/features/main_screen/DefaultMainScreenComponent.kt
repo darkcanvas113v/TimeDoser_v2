@@ -16,6 +16,7 @@ import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 import org.darkcanvas.timedoser.features.day_player.DayPlayer
 import org.darkcanvas.timedoser.features.main_screen.models.DayUIModel
 import org.darkcanvas.timedoser.features.main_screen.models.toUIModel
+import org.darkcanvas.timedoser.features.notification_channel.model.NotificationModel
 import org.darkcanvas.timedoser.features.task_editor.TaskEditorComponent
 import org.darkcanvas.timedoser.features.task_editor.di.TaskEditorFactoryData
 import org.darkcanvas.timedoser.features.task_editor.di.createTaskEditorDI
@@ -27,11 +28,26 @@ class DefaultMainScreenComponent(
   private val dayRepository: DayRepository
 ): MainScreenComponent, ComponentContext by componentContext {
 
-  private val taskEditorDI = createTaskEditorDI()
-
   override val dayState: Flow<DayUIModel> = dayRepository.observe().map { it.toUIModel() }
 
   private val navigation = SlotNavigation<TaskEditorConfig>()
+
+  private fun handleTaskAdded(task: Task, pos: Int) {
+    navigation.dismiss()
+    if (pos == -1) {
+      dayPlayer.addTask(task)
+      return
+    }
+
+    dayPlayer.modifyTask(task, pos)
+  }
+
+  private val taskEditorDI = createTaskEditorDI(
+    onDismiss = navigation::dismiss,
+    onSuccess = ::handleTaskAdded
+    )
+
+
 
   override val taskEditorComponent: Value<ChildSlot<*, TaskEditorComponent>> = childSlot(
     source = navigation,
@@ -42,8 +58,7 @@ class DefaultMainScreenComponent(
       componentContext = childComponentContext,
       task = config.task,
       pos = config.pos,
-      onDismiss = navigation::dismiss,
-      onSuccess = ::handleTaskAdded
+
     ))
   }
 
@@ -65,15 +80,7 @@ class DefaultMainScreenComponent(
     navigation.activate(TaskEditorConfig(task = dayRepository.peek().items[pos], pos = pos))
   }
 
-  private fun handleTaskAdded(task: Task, pos: Int) {
-    navigation.dismiss()
-    if (pos == -1) {
-      dayPlayer.addTask(task)
-      return
-    }
 
-    dayPlayer.modifyTask(task, pos)
-  }
 
   @Serializable
   private data class TaskEditorConfig(
