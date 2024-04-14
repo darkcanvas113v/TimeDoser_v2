@@ -43,7 +43,7 @@ fun MainScreenPreview() {
   }
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Preview
 @Composable
 fun TestPreview() {

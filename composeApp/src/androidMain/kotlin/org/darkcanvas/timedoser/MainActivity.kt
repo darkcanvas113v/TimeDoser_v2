@@ -15,8 +15,10 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     val root = DefaultRootComponent(
-      componentContext = defaultComponentContext()
+      componentContext = defaultComponentContext(),
+      container = (application as App).container
     )
+
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
     setContent {

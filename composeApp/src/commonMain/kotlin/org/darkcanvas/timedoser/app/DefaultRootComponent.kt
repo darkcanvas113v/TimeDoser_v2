@@ -12,20 +12,19 @@ import org.darkcanvas.timedoser.data_domain.day_component.di.createDayDI
 import org.darkcanvas.timedoser.data_domain.day_component.domain.DayRepository
 import org.darkcanvas.timedoser.features.day_player.di.createDayPlayerDI
 import org.darkcanvas.timedoser.features.main_screen.di.createMainScreenDI
+import org.kodein.di.DirectDI
 import org.kodein.di.instance
 
 class DefaultRootComponent(
-  componentContext: ComponentContext
+  componentContext: ComponentContext,
+  container: AppDIContainer
 ): RootComponent, ComponentContext by componentContext {
   private val navigation = StackNavigation<Config>()
 
   override val scope = CoroutineScope(Dispatchers.IO)
 
-  private val dayDI = createDayDI()
-  private val dayPlayerDI = createDayPlayerDI(
-    dayRepository = dayDI.instance<DayRepository>(),
-    ioScope = scope
-  )
+  private val dayDI = container.dayDI
+  private val dayPlayerDI = container.dayPlayerDI
 
   private val mainScreenDI = createMainScreenDI(
     dayDI = dayDI,
