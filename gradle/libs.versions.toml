@@ -19,6 +19,7 @@ sqldelight = "2.0.1"
 decompose = "2.2.2"
 koin = "3.5.3"
 kodein = "7.21.1"
+moshi = "1.15.1"
 
 
 [libraries]
@@ -50,6 +51,8 @@ koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin"}
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin"}
 kodein = { module = "org.kodein.di:kodein-di", version.ref = "kodein"}
 kodein-compose = { module = "org.kodein.di:kodein-di-framework-compose", version.ref = "kodein" }
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
+moshi-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
 
 
 [plugins]
@@ -60,3 +63,4 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 kotlinParcelize = { id = 'org.jetbrains.kotlin.plugin.parcelize', version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version = "1.9.21-1.0.16" }

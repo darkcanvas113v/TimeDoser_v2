@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.fade
 import com.arkivanov.decompose.extensions.compose.jetbrains.stack.animation.stackAnimation
+import org.darkcanvas.timedoser.core.theme.DefaultTheme
 import org.darkcanvas.timedoser.features.main_screen.ui.MainScreen
 import org.darkcanvas.timedoser.features.notification_channel.NotificationControllerProvider
 
@@ -25,7 +26,7 @@ import org.darkcanvas.timedoser.features.notification_channel.NotificationContro
 fun App(
   component: RootComponent
 ) {
-  MaterialTheme {
+  DefaultTheme {
     Box(modifier = Modifier.systemBarsPadding()) {
       NotificationControllerProvider {
         Children(
