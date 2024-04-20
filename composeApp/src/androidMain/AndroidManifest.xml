@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
       android:name=".App"
@@ -25,10 +27,27 @@
             </intent-filter>
         </activity>
 
+        <activity
+          android:name=".features.alarm.AlarmActivity"
+          android:exported="true"
+          android:launchMode="singleInstance"
+          android:showOnLockScreen="true"
+          android:showWhenLocked="true"
+          android:turnScreenOn="true"
+          android:excludeFromRecents="true">
+
+        </activity>
+
         <service android:name=".features.day_service.DayService"
           android:foregroundServiceType="specialUse">
             <property android:name="android.app.PROPERTY_USE_FGS_SUBTYPE"
               android:value="Foreground service used to keep the timer going"/>
+        </service>
+
+        <service android:name=".features.alarm.AlarmService"
+          android:foregroundServiceType="shortService">
+<!--            <property android:name="android.app.PROPERTY_USE_FGS_SUBTYPE"-->
+<!--              android:value="Foreground service used to keep the timer going"/>-->
         </service>
 
     </application>

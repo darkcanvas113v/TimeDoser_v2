@@ -6,6 +6,7 @@ import org.darkcanvas.timedoser.core.util.modifyFromTo
 import org.darkcanvas.timedoser.core.util.removeItemAt
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Day
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
+import org.darkcanvas.timedoser.features.day_player.events.DayPlayerEvent
 
 fun Day.start(): Day {
   if (state == Day.State.ACTIVE) return this
@@ -50,7 +51,7 @@ fun Day.stop(): Day {
   )
 }
 
-fun Day.progress(amount: Long): Day {
+fun Day.progress(amount: Long, taskEnded: (DayPlayerEvent.TaskEnded) -> Unit): Day {
   if (state != Day.State.ACTIVE) return this
 
   val progressedTask = items[currentTaskPos].progress(amount)
@@ -61,6 +62,8 @@ fun Day.progress(amount: Long): Day {
 
   if (progressedTask.state != Task.State.ACTIVE) {
     val unprocessedAmount = items[currentTaskPos].run { progress - duration }
+
+    taskEnded(DayPlayerEvent.TaskEnded(task = progressedTask, nextTask = if (currentTaskPos == items.lastIndex) null else items[currentTaskPos + 1]))
     return result.toNextTask(unprocessedAmount)
   }
 

@@ -22,9 +22,7 @@ class MainActivity : ComponentActivity() {
     WindowCompat.setDecorFitsSystemWindows(window, false)
 
     setContent {
-      MaterialTheme {
-        App(component = root)
-      }
+      App(component = root)
     }
   }
 }

@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinSerialization)
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -23,13 +23,16 @@ kotlin {
     jvm("desktop")
     
     sourceSets {
-        val desktopMain by getting
+//        commonMain.configure {
+//            kotlin.srcDirs("build/generated/ksp/commonMain/kotlin")
+//        }
         
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.sqldelight.androiddriver)
         }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -45,12 +48,23 @@ kotlin {
             implementation(libs.kotlin.json)
             implementation(libs.kodein)
             implementation(libs.kodein.compose)
+            implementation(libs.moshi)
+
         }
-        desktopMain.dependencies {
+
+        val desktopMain by getting {
+            dependencies {
 //            implementation(libs.compose.ui.tooling.preview)
-            implementation(compose.desktop.currentOs)
-            implementation(libs.sqldelight.jvmdriver)
+                implementation(compose.desktop.currentOs)
+                implementation(libs.sqldelight.jvmdriver)
+            }
         }
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().all {
+    if (name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
     }
 }
 
@@ -106,4 +120,10 @@ sqldelight {
             packageName.set("db")
         }
     }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.moshi.codegen)
+    add("kspAndroid", libs.moshi.codegen)
+    add("kspDesktop", libs.moshi.codegen)
 }
