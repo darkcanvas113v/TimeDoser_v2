@@ -11,6 +11,8 @@ import org.darkcanvas.timedoser.features.day_player.events.DayPlayerEvent
 fun Day.start(): Day {
   if (state == Day.State.ACTIVE) return this
 
+  if (state == Day.State.COMPLETED) return reset()
+
   val startedTask = items[currentTaskPos].start()
 
   return copy(
@@ -105,6 +107,12 @@ fun Day.removeTask(taskPos: Int): Day {
     items = items.removeItemAt(taskPos)
   ).updateStartTime(taskPos)
 }
+
+fun Day.reset(): Day = Day(
+  state = Day.State.WAITING,
+  items = items.map { it.reset() },
+  currentTaskPos = 0
+).updateStartTime(0)
 
 fun Day.updateStartTime(
   from: Int

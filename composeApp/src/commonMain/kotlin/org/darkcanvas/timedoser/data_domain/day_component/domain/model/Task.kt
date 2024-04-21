@@ -9,6 +9,7 @@ data class Task(
   val name: String,
   val startTime: Long,
   val duration: Long,
+  val intrinsicDuration: Long,
   val state: State,
   val progress: Long
 ) {
@@ -22,6 +23,7 @@ data class Task(
       duration = 0L,
       progress = 0L,
       startTime = 0L,
+      intrinsicDuration = 0L,
       state = State.WAITING
     )
   }

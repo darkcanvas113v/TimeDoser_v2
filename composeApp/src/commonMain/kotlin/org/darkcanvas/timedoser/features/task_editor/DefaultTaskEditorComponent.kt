@@ -22,7 +22,7 @@ class DefaultTaskEditorComponent(
   }
 
   override fun setDuration(duration: Long) {
-    _task.update { it.copy(duration = duration) }
+    _task.update { it.copy(intrinsicDuration = duration, duration = duration) }
   }
 
   override fun verifyData(): TaskEditorComponent.Result {
