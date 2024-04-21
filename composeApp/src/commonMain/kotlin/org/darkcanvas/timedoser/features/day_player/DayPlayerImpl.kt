@@ -33,8 +33,9 @@ class DayPlayerImpl(
             ioScope.launch { _events.emit(it) }
           }
         }
-        if (dayRepository.peek().state == Day.State.COMPLETED)
+        if (dayRepository.peek().state == Day.State.COMPLETED) {
           ticker.stop()
+        }
       }
     }
   }

@@ -1,5 +1,8 @@
 package org.darkcanvas.timedoser.data_domain.day_component.domain.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class Day(
   val state: State,
   val currentTaskPos: Int,

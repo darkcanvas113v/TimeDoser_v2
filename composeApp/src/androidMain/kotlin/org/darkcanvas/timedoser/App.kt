@@ -1,7 +1,9 @@
 package org.darkcanvas.timedoser
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
+import com.russhwolf.settings.SharedPreferencesSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,7 +22,9 @@ import org.kodein.di.instance
 
 class App : Application() {
 
-  val container = AppDIContainer()
+  val container by lazy { AppDIContainer(
+    settings = SharedPreferencesSettings(delegate = getSharedPreferences("default", Context.MODE_PRIVATE))
+  ) }
 
   private val scope = CoroutineScope(Dispatchers.IO)
 

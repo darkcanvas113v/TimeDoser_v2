@@ -1,7 +1,9 @@
 package org.darkcanvas.timedoser.data_domain.day_component.domain.model
 
+import com.squareup.moshi.JsonClass
 import kotlinx.serialization.Serializable
 
+@JsonClass(generateAdapter = true)
 @Serializable
 data class Task(
   val name: String,

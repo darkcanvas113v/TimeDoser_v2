@@ -48,6 +48,7 @@ kotlin {
             implementation(libs.kodein)
             implementation(libs.kodein.compose)
             implementation(libs.moshi)
+            implementation(libs.settings)
 
         }
 
@@ -115,7 +116,7 @@ compose.desktop {
 sqldelight {
     databases {
         create("AppDatabase") {
-            packageName.set("db")
+            packageName.set("org.darkcanvas.timedoser")
         }
     }
 }
