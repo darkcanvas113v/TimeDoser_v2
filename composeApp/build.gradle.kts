@@ -28,7 +28,6 @@ kotlin {
 //        }
         
         androidMain.dependencies {
-            implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.sqldelight.androiddriver)
         }
@@ -54,7 +53,6 @@ kotlin {
 
         val desktopMain by getting {
             dependencies {
-//            implementation(libs.compose.ui.tooling.preview)
                 implementation(compose.desktop.currentOs)
                 implementation(libs.sqldelight.jvmdriver)
             }

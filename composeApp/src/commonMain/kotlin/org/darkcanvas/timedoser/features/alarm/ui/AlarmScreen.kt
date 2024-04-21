@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.darkcanvas.timedoser.core.theme.LocalExtendedColors
 import org.darkcanvas.timedoser.features.alarm.AlarmComponent
+import org.darkcanvas.timedoser.features.alarm.model.AlarmModel
+import org.darkcanvas.timedoser.features.alarm.model.toAlarmUIModel
 
 @Composable
 fun AlarmScreen(
@@ -48,3 +50,15 @@ fun AlarmScreen(
     }
   }
 }
+
+//@Preview
+//@Composable
+//private fun AlarmScreenPreview() {
+//  AlarmScreen(/
+//    component = object : AlarmComponent {
+//      override val alarmUIModel = AlarmModel("Task1", "Task2").toAlarmUIModel()
+//
+//    },
+//    disableAlarm = {}
+//  )
+//}

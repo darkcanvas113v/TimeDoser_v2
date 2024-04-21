@@ -8,7 +8,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.core.view.WindowCompat
 import com.arkivanov.decompose.defaultComponentContext
 import org.darkcanvas.timedoser.app.DefaultRootComponent
-import org.darkcanvas.timedoser.previews.TestPreview
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

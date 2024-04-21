@@ -24,8 +24,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import org.darkcanvas.timedoser.core.theme.LocalExtendedColors
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 import org.darkcanvas.timedoser.features.main_screen.models.TaskUIModel
 
@@ -33,6 +35,7 @@ import org.darkcanvas.timedoser.features.main_screen.models.TaskUIModel
 fun TaskItem(
   task: TaskUIModel
 ) {
+  val color = resolveTaskColor(task.state)
   Surface(
     elevation = 4.dp,
     modifier = Modifier
@@ -45,7 +48,7 @@ fun TaskItem(
     ) {
       Box(
         modifier = Modifier
-          .background(MaterialTheme.colors.primary)
+          .background(color)
           .fillMaxHeight()
           .width(56.dp)
       ) {
@@ -105,7 +108,7 @@ fun TaskItem(
 
         LinearProgressIndicator(
           progress = task.relativeProgress,
-          color = MaterialTheme.colors.primary.copy(alpha = 0.7f),
+          color = color.copy(alpha = 0.7f),
           modifier = Modifier
             .padding(top = 2.dp)
             .fillMaxWidth()
@@ -114,3 +117,14 @@ fun TaskItem(
     }
   }
 }
+
+@Composable
+private fun resolveTaskColor(state: Task.State): Color {
+  return when (state) {
+    Task.State.WAITING, Task.State.PAUSED -> MaterialTheme.colors.primary
+    Task.State.ACTIVE -> LocalExtendedColors.current.active
+    Task.State.COMPLETED -> LocalExtendedColors.current.completed
+    Task.State.DISABLED -> LocalExtendedColors.current.disabled
+  }
+}
+
