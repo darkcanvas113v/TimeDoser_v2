@@ -1,6 +1,8 @@
 package org.darkcanvas.timedoser.features.main_screen.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +23,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,7 +36,8 @@ import org.darkcanvas.timedoser.features.main_screen.models.TaskUIModel
 
 @Composable
 fun TaskItem(
-  task: TaskUIModel
+  task: TaskUIModel,
+  onClick: () -> Unit
 ) {
   val color = resolveTaskColor(task.state)
   Surface(
@@ -41,6 +45,11 @@ fun TaskItem(
     modifier = Modifier
       .fillMaxWidth()
       .padding(start = 8.dp, end = 8.dp, top = 16.dp)
+      .clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+        onClick = onClick
+      )
   ) {
     Row(
       modifier = Modifier

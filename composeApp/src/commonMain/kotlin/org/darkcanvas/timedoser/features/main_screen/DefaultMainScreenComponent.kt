@@ -77,10 +77,12 @@ class DefaultMainScreenComponent(
   }
 
   override fun editTask(pos: Int) {
-    navigation.activate(TaskEditorConfig(task = dayRepository.peek().items[pos], pos = pos))
+    val task = dayRepository.peek().items[pos]
+
+    if (task.state == Task.State.COMPLETED) return
+
+    navigation.activate(TaskEditorConfig(task = task, pos = pos))
   }
-
-
 
   @Serializable
   private data class TaskEditorConfig(
