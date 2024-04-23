@@ -53,11 +53,9 @@ fun TaskEditor(
     component.task
   }.collectAsState(initial = Task.INITIAL)
 
-  val (timePickerDialogVisibility, setTimePickerDialogVisibility) = remember {
+  val (timePickerDialogVisible, setTimePickerDialogVisibility) = remember {
     mutableStateOf(false)
   }
-
-  val notificationController = LocalNotificationController.current
 
   var taskEditorErrorState by remember { mutableStateOf(TaskEditorErrorState()) }
 
@@ -179,13 +177,13 @@ fun TaskEditor(
         }
       }
 
-    TimePickerDialog(
-      visible = timePickerDialogVisibility,
-      onDismiss = { setTimePickerDialogVisibility(false) },
-      time = task.duration,
-      onGetResult = {
-        component.setDuration(it)
-      }
-    )
+    if (timePickerDialogVisible)
+      TimePickerDialog(
+        onDismiss = { setTimePickerDialogVisibility(false) },
+        time = task.duration,
+        onGetResult = {
+          component.setDuration(it)
+        }
+      )
   }
 }

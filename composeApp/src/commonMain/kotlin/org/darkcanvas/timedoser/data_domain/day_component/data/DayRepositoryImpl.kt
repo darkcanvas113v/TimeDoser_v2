@@ -13,26 +13,6 @@ class DayRepositoryImpl(
   private val settings: Settings
 ): DayRepository {
 
-/*  private val default = Day(
-    state = Day.State.WAITING,
-    currentTaskPos = 0,
-    items = listOf(
-      Task(
-        name = "Asobe",
-        startTime = 0L,
-        duration = 5000L,
-        state = Task.State.WAITING,
-        progress = 0L
-      ),
-      Task(
-        name = "Asobe",
-        startTime = 0L,
-        duration = 5000L,
-        state = Task.State.WAITING,
-        progress = 0L
-      )
-    )
-  )*/
   private val model = MutableStateFlow(Day.DEFAULT)
 
   init {
