@@ -31,6 +31,7 @@ fun MainScreen(
       Box(modifier = Modifier.weight(1f)) {
         DefaultFragment(
           onItemClick = component::editTask,
+          onItemMoved = component::moveTask,
           tasks = dayState.items
         )
       }

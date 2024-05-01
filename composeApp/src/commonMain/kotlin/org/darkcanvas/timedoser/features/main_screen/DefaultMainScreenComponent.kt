@@ -72,6 +72,8 @@ class DefaultMainScreenComponent(
 
   override fun stopCurrentTask() = dayPlayer.stopCurrentTask()
 
+  override fun moveTask(from: Int, to: Int) = dayPlayer.moveTask(from, to)
+
   override fun addTask() {
     navigation.activate(TaskEditorConfig.NEW_TASK)
   }

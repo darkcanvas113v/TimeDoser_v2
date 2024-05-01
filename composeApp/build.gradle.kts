@@ -23,6 +23,9 @@ kotlin {
     jvm("desktop")
     
     sourceSets {
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
 //        commonMain.configure {
 //            kotlin.srcDirs("build/generated/ksp/commonMain/kotlin")
 //        }

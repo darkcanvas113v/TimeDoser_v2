@@ -12,6 +12,7 @@ import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 import org.darkcanvas.timedoser.features.day_player.events.DayPlayerEvent
 import org.darkcanvas.timedoser.features.day_player.mutators.addTask
 import org.darkcanvas.timedoser.features.day_player.mutators.editTask
+import org.darkcanvas.timedoser.features.day_player.mutators.moveTask
 import org.darkcanvas.timedoser.features.day_player.mutators.pause
 import org.darkcanvas.timedoser.features.day_player.mutators.progress
 import org.darkcanvas.timedoser.features.day_player.mutators.removeTask
@@ -87,6 +88,13 @@ class DayPlayerImpl(
   override fun modifyTask(task: Task, pos: Int) {
     dayRepository.update { day ->
       day.editTask(task, pos)
+    }
+  }
+
+  override fun moveTask(from: Int, to: Int) {
+    println("Task moved from $from to $to")
+    dayRepository.update { day ->
+      day.moveTask(from, to)
     }
   }
 
