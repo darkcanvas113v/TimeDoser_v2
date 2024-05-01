@@ -10,6 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
+import org.darkcanvas.timedoser.data_domain.day_component.domain.model.isInteractive
 import org.darkcanvas.timedoser.features.main_screen.models.TaskUIModel
 
 @Composable
@@ -34,9 +36,13 @@ fun DefaultFragment(
       items = tasks
     ) { i, item ->
       DraggableItem(
+        isDraggable = item.state.isInteractive(),
         offset = offsets[i],
         offsetChanged = { offset ->
-          offsets = calculateOffsets(offset, tasks.size, i)
+          val bottom = tasks.indexOfFirst { it.state.isInteractive() }
+          val cappedOffset = capOffset(offset, i, tasks.size, bottom)
+          println("Bottom is $bottom")
+          offsets = calculateOffsets(cappedOffset, tasks.size, i)
         },
         onDragCancelled = {
           offsets = List(tasks.size) { 0 }
@@ -54,23 +60,21 @@ fun DefaultFragment(
 }
 
 fun calculateOffsets(offset: Int, size: Int, pos: Int): List<Int> {
-  val cappedOffset = capOffset(offset, pos, size)
-
   val list = MutableList(size) { 0 }
-  list[pos] = cappedOffset
+  list[pos] = offset
 
-  if (cappedOffset > 0) {
-    for (i in pos + 1 until pos + cappedOffset + 1) list[i] = -1
+  if (offset > 0) {
+    for (i in pos + 1 until pos + offset + 1) list[i] = -1
   }
   else {
-    for (i in pos + cappedOffset until pos) list[i] = 1
+    for (i in pos + offset until pos) list[i] = 1
   }
 
   return list
 }
 
 fun capOffset(offset: Int, pos: Int, top: Int, bottom: Int = 0): Int {
-  return if (pos + offset < bottom) -pos
+  return if (pos + offset < bottom) -pos + bottom
   else if (pos + offset >= top) top - pos - 1
   else offset
 }

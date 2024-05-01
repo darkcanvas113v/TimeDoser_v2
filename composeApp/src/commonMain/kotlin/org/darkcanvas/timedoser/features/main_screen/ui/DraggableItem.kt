@@ -18,6 +18,7 @@ import androidx.compose.ui.zIndex
 
 @Composable
 fun DraggableItem(
+  isDraggable: Boolean,
   offsetChanged: (Int) -> Unit,
   onDragCancelled: () -> Unit,
   onDragFinished: (Int) -> Unit,
@@ -34,35 +35,37 @@ fun DraggableItem(
       offsetChanged(currentOffset)
   }
 
-  Box(
-    modifier = Modifier
-      .onGloballyPositioned { size = it.size }
-      .graphicsLayer {
-        translationY = if (offsetY != 0f) offsetY else size.height * offset.toFloat()
-      }
-      .zIndex(zIndex)
-      .pointerInput(Unit) {
-        detectDragGesturesAfterLongPress(
-          onDrag = { change, dragAmount ->
-            change.consume()
-            offsetY += dragAmount.y
-          },
-          onDragStart = {
-            zIndex = 2f
-          },
-          onDragEnd = {
-            offsetY = 0f
-            zIndex = 1f
-            onDragFinished(offset)
-          },
-          onDragCancel = {
-            offsetY = 0f
-            zIndex = 1f
-            onDragCancelled()
-          }
-        )
-      }
-  ) {
-    content()
-  }
+  if (isDraggable)
+    Box(
+      modifier = Modifier
+        .onGloballyPositioned { size = it.size }
+        .graphicsLayer {
+          translationY = if (offsetY != 0f) offsetY else size.height * offset.toFloat()
+        }
+        .zIndex(zIndex)
+        .pointerInput(Unit) {
+            detectDragGesturesAfterLongPress(
+              onDrag = { change, dragAmount ->
+                change.consume()
+                offsetY += dragAmount.y
+              },
+              onDragStart = {
+                zIndex = 2f
+              },
+              onDragEnd = {
+                offsetY = 0f
+                zIndex = 1f
+                onDragFinished(offset)
+              },
+              onDragCancel = {
+                offsetY = 0f
+                zIndex = 1f
+                onDragCancelled()
+              }
+            )
+        }
+    ) {
+      content()
+    }
+  else content()
 }

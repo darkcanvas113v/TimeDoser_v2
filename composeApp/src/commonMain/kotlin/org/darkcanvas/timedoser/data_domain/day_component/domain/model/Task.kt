@@ -28,3 +28,5 @@ data class Task(
     )
   }
 }
+
+fun Task.State.isInteractive(): Boolean = this != Task.State.ACTIVE && this != Task.State.COMPLETED
