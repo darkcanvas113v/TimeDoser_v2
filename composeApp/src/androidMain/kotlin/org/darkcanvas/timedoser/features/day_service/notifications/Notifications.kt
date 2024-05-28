@@ -15,6 +15,11 @@ fun getDisabledNotificationBuilder(context: Context) = getDefaultNotificationBui
     "Start",
     getPendingIntent(context, DayService.ACTION_START)
   )
+  .addAction(
+    R.drawable.baseline_remove_24,
+    "Remove",
+    getPendingIntent(context, DayService.ACTION_REMOVE)
+  )
 
 fun getActiveNotificationBuilder(context: Context) = getDefaultNotificationBuilder(context)
   .addAction(
