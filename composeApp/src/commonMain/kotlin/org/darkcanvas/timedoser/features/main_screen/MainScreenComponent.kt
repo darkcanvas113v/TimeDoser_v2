@@ -20,6 +20,7 @@ interface MainScreenComponent {
   fun removeTask(atPos: Int)
   fun addTask()
   fun stopCurrentTask()
+  fun moveTask(from: Int, to: Int)
 
   fun editTask(pos: Int)
 

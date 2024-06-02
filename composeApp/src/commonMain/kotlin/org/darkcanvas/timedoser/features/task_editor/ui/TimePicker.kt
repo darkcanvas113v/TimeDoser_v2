@@ -41,7 +41,6 @@ import org.darkcanvas.timedoser.core.util.getHoursAndMinutes
 
 @Composable
 fun TimePickerDialog(
-  visible: Boolean,
   onDismiss: () -> Unit,
   time: Long,
   onGetResult: (Long) -> Unit
@@ -57,68 +56,66 @@ fun TimePickerDialog(
     mutableStateOf(minutes)
   }
 
-  if (visible) {
-    Dialog(
-      onDismissRequest = onDismiss
+  Dialog(
+    onDismissRequest = onDismiss
+  ) {
+    Surface(
+      shape = MaterialTheme.shapes.small
     ) {
-      Surface(
-        shape = MaterialTheme.shapes.small
+      Column(
+        modifier = Modifier
+          .padding(vertical = 16.dp)
+          .padding(horizontal = 16.dp)
       ) {
-        Column(
-          modifier = Modifier
-            .padding(vertical = 16.dp)
-            .padding(horizontal = 16.dp)
-        ) {
-          Text(
-            text = "PickTime",
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(bottom = 16.dp)
-          )
+        Text(
+          text = "PickTime",
+          style = MaterialTheme.typography.h5,
+          modifier = Modifier.padding(bottom = 16.dp)
+        )
 
-          TimePicker(
-            hours = mHours,
-            setHours = setHours,
-            minutes = mMinutes,
-            setMinutes = setMinutes,
-            onDone = {
+        TimePicker(
+          hours = mHours,
+          setHours = setHours,
+          minutes = mMinutes,
+          setMinutes = setMinutes,
+          onDone = {
+            onGetResult(convertToMillis(mHours, mMinutes))
+            onDismiss()
+          }
+        )
+
+        Row(
+          horizontalArrangement = Arrangement.SpaceBetween,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp)
+        ) {
+          Button(
+            onClick = onDismiss,
+            colors = ButtonDefaults.buttonColors(
+              backgroundColor = Color.Black.copy(alpha = 0.07f),
+              contentColor = Color.Black
+            ),
+            elevation = null,
+            modifier = Modifier.width(90.dp)
+          ) {
+            Text(text = "Cancel")
+          }
+
+          Button(
+            onClick = {
               onGetResult(convertToMillis(mHours, mMinutes))
               onDismiss()
-            }
-          )
-
-          Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(top = 32.dp)
+            },
+            modifier = Modifier.width(90.dp)
           ) {
-            Button(
-              onClick = onDismiss,
-              colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color.Black.copy(alpha = 0.07f),
-                contentColor = Color.Black
-              ),
-              elevation = null,
-              modifier = Modifier.width(90.dp)
-            ) {
-              Text(text = "Cancel")
-            }
-
-            Button(
-              onClick = {
-                onGetResult(convertToMillis(mHours, mMinutes))
-                onDismiss()
-              },
-              modifier = Modifier.width(90.dp)
-            ) {
-              Text(text = "Save")
-            }
+            Text(text = "Save")
           }
         }
       }
     }
-
   }
+
 
 }
 

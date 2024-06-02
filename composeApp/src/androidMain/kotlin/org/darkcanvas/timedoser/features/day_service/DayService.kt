@@ -56,6 +56,7 @@ class DayService : Service() {
       ACTION_STOP -> { dayPlayer.stopCurrentTask() }
       ACTION_START -> { dayPlayer.play() }
       ACTION_PAUSE -> { dayPlayer.pause() }
+      ACTION_REMOVE -> { stopForeground(STOP_FOREGROUND_REMOVE) }
     }
     return START_NOT_STICKY
   }
@@ -96,6 +97,7 @@ class DayService : Service() {
     const val ACTION_START = "START"
     const val ACTION_PAUSE = "PAUSE"
     const val ACTION_STOP = "STOP"
+    const val ACTION_REMOVE = "REMOVE"
 
     const val ID = 1
   }

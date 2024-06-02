@@ -45,3 +45,11 @@ fun Task.progress(amount: Long): Task {
   )
 
 }
+
+fun Task.reset(): Task {
+  return copy(
+    state = Task.State.WAITING,
+    duration = intrinsicDuration,
+    progress = 0L
+  )
+}

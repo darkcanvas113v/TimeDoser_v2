@@ -6,11 +6,12 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.ExperimentalDecomposeApi
 import com.arkivanov.decompose.extensions.compose.jetbrains.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import com.russhwolf.settings.PreferencesSettings
 import org.darkcanvas.timedoser.app.App
 import org.darkcanvas.timedoser.app.AppDIContainer
 import org.darkcanvas.timedoser.app.DefaultRootComponent
 import org.darkcanvas.timedoser.runOnUiThread
-import javax.sound.sampled.AudioSystem
+import java.util.prefs.Preferences
 
 @OptIn(ExperimentalDecomposeApi::class)
 fun main() {
@@ -18,7 +19,9 @@ fun main() {
 
     val root = runOnUiThread { DefaultRootComponent(
         componentContext = DefaultComponentContext(lifecycle = lifecycle),
-        container = AppDIContainer()
+        container = AppDIContainer(
+            settings = PreferencesSettings(Preferences.userRoot())
+        )
     ) }
 
     application {

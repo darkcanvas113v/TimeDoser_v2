@@ -26,7 +26,7 @@ class DefaultMainScreenComponent(
   componentContext: ComponentContext,
   private val dayPlayer: DayPlayer,
   private val dayRepository: DayRepository
-): MainScreenComponent, ComponentContext by componentContext {
+) : MainScreenComponent, ComponentContext by componentContext {
 
   override val dayState: Flow<DayUIModel> = dayRepository.observe().map { it.toUIModel() }
 
@@ -44,9 +44,12 @@ class DefaultMainScreenComponent(
 
   private val taskEditorDI = createTaskEditorDI(
     onDismiss = navigation::dismiss,
-    onSuccess = ::handleTaskAdded
-    )
-
+    onSuccess = ::handleTaskAdded,
+    onDelete = {
+      removeTask(it)
+      navigation.dismiss()
+    }
+  )
 
 
   override val taskEditorComponent: Value<ChildSlot<*, TaskEditorComponent>> = childSlot(
@@ -54,12 +57,14 @@ class DefaultMainScreenComponent(
     serializer = TaskEditorConfig.serializer(),
     handleBackButton = true
   ) { config, childComponentContext ->
-    taskEditorDI.instance(arg = TaskEditorFactoryData(
-      componentContext = childComponentContext,
-      task = config.task,
-      pos = config.pos,
+    taskEditorDI.instance(
+      arg = TaskEditorFactoryData(
+        componentContext = childComponentContext,
+        task = config.task,
+        pos = config.pos,
 
-    ))
+        )
+    )
   }
 
   override fun play() = dayPlayer.play()
@@ -72,15 +77,19 @@ class DefaultMainScreenComponent(
 
   override fun stopCurrentTask() = dayPlayer.stopCurrentTask()
 
+  override fun moveTask(from: Int, to: Int) = dayPlayer.moveTask(from, to)
+
   override fun addTask() {
     navigation.activate(TaskEditorConfig.NEW_TASK)
   }
 
   override fun editTask(pos: Int) {
-    navigation.activate(TaskEditorConfig(task = dayRepository.peek().items[pos], pos = pos))
+    val task = dayRepository.peek().items[pos]
+
+    if (task.state == Task.State.COMPLETED) return
+
+    navigation.activate(TaskEditorConfig(task = task, pos = pos))
   }
-
-
 
   @Serializable
   private data class TaskEditorConfig(

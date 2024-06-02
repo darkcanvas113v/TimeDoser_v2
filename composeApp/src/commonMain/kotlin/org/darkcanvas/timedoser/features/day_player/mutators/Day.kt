@@ -7,9 +7,12 @@ import org.darkcanvas.timedoser.core.util.removeItemAt
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Day
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 import org.darkcanvas.timedoser.features.day_player.events.DayPlayerEvent
+import kotlin.math.min
 
 fun Day.start(): Day {
   if (state == Day.State.ACTIVE) return this
+
+  if (state == Day.State.COMPLETED) return reset()
 
   val startedTask = items[currentTaskPos].start()
 
@@ -105,6 +108,33 @@ fun Day.removeTask(taskPos: Int): Day {
     items = items.removeItemAt(taskPos)
   ).updateStartTime(taskPos)
 }
+
+fun Day.moveTask(from: Int, to: Int): Day {
+  val newTasks = buildList {
+    if (from > to) {
+      addAll(items.subList(0, to))
+      add(items[from])
+      addAll(items.subList(to, from))
+      addAll(items.subList(from + 1, items.size))
+    }
+    else {
+      addAll(items.subList(0, from))
+      addAll(items.subList(from + 1, to + 1))
+      add(items[from])
+      addAll(items.subList(to + 1, items.size))
+    }
+  }
+
+  return copy(
+    items = newTasks,
+  ).updateStartTime(min(from, to))
+}
+
+fun Day.reset(): Day = Day(
+  state = Day.State.WAITING,
+  items = items.map { it.reset() },
+  currentTaskPos = 0
+).updateStartTime(0)
 
 fun Day.updateStartTime(
   from: Int

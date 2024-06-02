@@ -8,6 +8,8 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 
 fun getDefaultVibrator(context: Context): Vibrator {
   return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -35,3 +37,4 @@ fun getDefaultRingtone(context: Context): Ringtone {
 
   return RingtoneManager.getRingtone(context, soundUri)
 }
+

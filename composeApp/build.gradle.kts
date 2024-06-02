@@ -23,12 +23,14 @@ kotlin {
     jvm("desktop")
     
     sourceSets {
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
 //        commonMain.configure {
 //            kotlin.srcDirs("build/generated/ksp/commonMain/kotlin")
 //        }
         
         androidMain.dependencies {
-            implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.sqldelight.androiddriver)
         }
@@ -49,12 +51,12 @@ kotlin {
             implementation(libs.kodein)
             implementation(libs.kodein.compose)
             implementation(libs.moshi)
+            implementation(libs.settings)
 
         }
 
         val desktopMain by getting {
             dependencies {
-//            implementation(libs.compose.ui.tooling.preview)
                 implementation(compose.desktop.currentOs)
                 implementation(libs.sqldelight.jvmdriver)
             }
@@ -117,7 +119,7 @@ compose.desktop {
 sqldelight {
     databases {
         create("AppDatabase") {
-            packageName.set("db")
+            packageName.set("org.darkcanvas.timedoser")
         }
     }
 }

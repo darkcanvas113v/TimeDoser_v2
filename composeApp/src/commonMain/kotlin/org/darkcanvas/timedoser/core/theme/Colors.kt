@@ -23,7 +23,8 @@ val LightColorPalette = lightColors(
 
 data class ExtendedColors(
   val disabled: Color = Gray,
-  val active: Color = DarkRed
+  val active: Color = DarkRed,
+  val completed: Color = Purple700
 )
 
 val LocalExtendedColors = staticCompositionLocalOf {
