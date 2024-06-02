@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.isInteractive
 import org.darkcanvas.timedoser.features.main_screen.models.TaskUIModel
 
@@ -18,6 +17,8 @@ import org.darkcanvas.timedoser.features.main_screen.models.TaskUIModel
 fun DefaultFragment(
   onItemClick: (Int) -> Unit,
   onItemMoved: (Int, Int) -> Unit,
+  onItemRemoved: (Int) -> Unit,
+  onItemDisabled: (Int) -> Unit,
   tasks: List<TaskUIModel>
 ) {
   var offsets by remember {
@@ -37,11 +38,10 @@ fun DefaultFragment(
     ) { i, item ->
       DraggableItem(
         isDraggable = item.state.isInteractive(),
-        offset = offsets[i],
+        offsetPos = offsets[i],
         offsetChanged = { offset ->
           val bottom = tasks.indexOfFirst { it.state.isInteractive() }
           val cappedOffset = capOffset(offset, i, tasks.size, bottom)
-          println("Bottom is $bottom")
           offsets = calculateOffsets(cappedOffset, tasks.size, i)
         },
         onDragCancelled = {
@@ -51,6 +51,12 @@ fun DefaultFragment(
           val offset = offsets[i]
           offsets = List(tasks.size) { 0 }
           if (offset != 0) onItemMoved(i, i + offset)
+        },
+        onSwipedToRight = {
+          onItemRemoved(i)
+        },
+        onSwipedToLeft = {
+          onItemDisabled(i)
         }
       ) {
         TaskItem(task = item, onClick = { onItemClick(i) })

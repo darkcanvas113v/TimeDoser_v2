@@ -13,6 +13,7 @@ interface DayPlayer {
   fun removeTask(taskPos: Int)
   fun modifyTask(task: Task, pos: Int)
   fun moveTask(from: Int, to: Int)
+  fun toggleDisabled(taskPos: Int)
 
   fun observeEvents(): Flow<DayPlayerEvent>
 }

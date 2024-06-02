@@ -12,14 +12,17 @@ import kotlin.math.min
 fun Day.start(): Day {
   if (state == Day.State.ACTIVE) return this
 
-  if (state == Day.State.COMPLETED) return reset()
+  if (state == Day.State.COMPLETED || items.lastIndex == currentTaskPos) return reset()
 
   val startedTask = items[currentTaskPos].start()
-
-  return copy(
+  var day = copy(
     state = Day.State.ACTIVE,
     items = items.modifyAt(currentTaskPos, startedTask)
-  ).updateStartTime(currentTaskPos + 1)
+  )
+
+  if (startedTask.state == Task.State.COMPLETED) day = day.toNextTask()
+
+  return day.updateStartTime(currentTaskPos + 1)
 }
 
 fun Day.pause(): Day {
@@ -79,11 +82,16 @@ fun Day.toNextTask(progressAmount: Long = 0L): Day {
   }
 
   val nextTaskPos = currentTaskPos + 1
-  val nextTask = items[nextTaskPos].start().progress(progressAmount)
+  val nextTask = items[nextTaskPos]
+
+  if (nextTask.state == Task.State.DISABLED) return copy(
+    currentTaskPos = nextTaskPos,
+    items = items.modifyAt(nextTaskPos, nextTask.stop())
+  ).toNextTask()
 
   return copy(
     currentTaskPos = nextTaskPos,
-    items = items.modifyAt(nextTaskPos, nextTask)
+    items = items.modifyAt(nextTaskPos, nextTask.start().progress(progressAmount))
   )
 }
 
@@ -106,6 +114,19 @@ fun Day.removeTask(taskPos: Int): Day {
 
   return copy(
     items = items.removeItemAt(taskPos)
+  ).updateStartTime(taskPos)
+}
+
+fun Day.toggleTask(taskPos: Int): Day {
+  if (taskPos < currentTaskPos) return this
+  if (taskPos == currentTaskPos && state == Day.State.ACTIVE) return this
+
+  val task = items[taskPos]
+  return copy(
+    items = items.modifyAt(
+      pos = taskPos,
+      task.disable()
+    )
   ).updateStartTime(taskPos)
 }
 
@@ -151,7 +172,7 @@ fun Day.updateStartTime(
 
   for (i in fromIndex until items.size) {
     newItems.add(items[i].copy(
-      startTime = newItems[i-1].run { startTime + duration }
+      startTime = newItems[i-1].getDuration()
     ))
   }
 

@@ -25,25 +25,13 @@ class DefaultTaskEditorComponent(
   private val onDismiss: () -> Unit,
   private val onSuccess: (Task, Int) -> Unit,
   private val onDelete: () -> Unit
-): TaskEditorComponent, ComponentContext by componentContext {
+) : TaskEditorComponent, ComponentContext by componentContext {
 
   private val _task = MutableStateFlow(formerTask)
   override val task: Flow<Task> = _task
   override val isInEditMode: Boolean = pos != -1
 
-  private val navigation = SlotNavigation<ConfirmationDialogConfig>()
-
-  override val confirmationDialog: Value<ChildSlot<*, ConfirmationComponent>> = childSlot(
-    source = navigation,
-    serializer = ConfirmationDialogConfig.serializer(),
-    handleBackButton = true
-  ) { config, childComponentContext ->
-    ConfirmationComponent(
-      taskName = config.taskName,
-      onConfirm = onDelete,
-      onDismiss = { navigation.dismiss() }
-    )
-  }
+  override val confirmationDialog = MutableStateFlow(null)
 
   override fun setName(name: String) {
     _task.update { it.copy(name = name) }
@@ -66,15 +54,24 @@ class DefaultTaskEditorComponent(
   }
 
   override fun close() = onDismiss()
+
   override fun delete() {
-    navigation.activate(ConfirmationDialogConfig(
-      taskName = formerTask.name)
+    ConfirmationComponent(
+      taskName = formerTask.name,
+      pos = pos,
+      onConfirm = {
+        confirmationDialog.value = null
+        onDelete()
+      },
+      onDismiss = {
+        confirmationDialog.value = null
+      }
     )
   }
 
   @Serializable
   data class ConfirmationDialogConfig(
-    val taskName: String
-  ) {
-  }
+    val taskName: String,
+    val pos: Int
+  )
 }

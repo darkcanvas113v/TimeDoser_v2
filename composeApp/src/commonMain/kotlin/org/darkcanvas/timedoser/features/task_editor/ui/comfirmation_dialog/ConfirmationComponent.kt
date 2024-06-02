@@ -8,6 +8,7 @@ import androidx.compose.ui.text.withStyle
 
 class ConfirmationComponent(
   taskName: String,
+  val pos: Int,
   val onDismiss: () -> Unit,
   val onConfirm: () -> Unit
 ) {

@@ -70,7 +70,7 @@ fun TaskEditor(
     else if (task.name.isNotBlank()) taskEditorErrorState = taskEditorErrorState.copy(nameIsEmpty = false)
   }
 
-  val confirmationDialog = component.confirmationDialog.subscribeAsState()
+  val confirmationDialog = component.confirmationDialog.collectAsState(null)
 
   Dialog(
     onDismissRequest = component::close,
@@ -208,7 +208,7 @@ fun TaskEditor(
         }
       )
 
-    confirmationDialog.value.child?.instance?.also {
+    confirmationDialog.value?.also {
       ConfirmationDialog(it)
     }
   }

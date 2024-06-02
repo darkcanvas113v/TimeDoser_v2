@@ -3,6 +3,8 @@ package org.darkcanvas.timedoser.features.day_player.mutators
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 
 fun Task.start(): Task {
+  if (state == Task.State.DISABLED) return stop().copy(startTime = System.currentTimeMillis())
+
   return copy(
     state = Task.State.ACTIVE,
     startTime = System.currentTimeMillis()
@@ -52,4 +54,9 @@ fun Task.reset(): Task {
     duration = intrinsicDuration,
     progress = 0L
   )
+}
+
+fun Task.getDuration(): Long = when {
+  state == Task.State.DISABLED -> startTime
+  else -> startTime + duration
 }

@@ -8,18 +8,18 @@ import com.arkivanov.decompose.router.slot.childSlot
 import com.arkivanov.decompose.router.slot.dismiss
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import org.darkcanvas.timedoser.data_domain.day_component.domain.DayRepository
-import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Day
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 import org.darkcanvas.timedoser.features.day_player.DayPlayer
 import org.darkcanvas.timedoser.features.main_screen.models.DayUIModel
 import org.darkcanvas.timedoser.features.main_screen.models.toUIModel
-import org.darkcanvas.timedoser.features.notification_channel.model.NotificationModel
 import org.darkcanvas.timedoser.features.task_editor.TaskEditorComponent
 import org.darkcanvas.timedoser.features.task_editor.di.TaskEditorFactoryData
 import org.darkcanvas.timedoser.features.task_editor.di.createTaskEditorDI
+import org.darkcanvas.timedoser.features.task_editor.ui.comfirmation_dialog.ConfirmationComponent
 import org.kodein.di.instance
 
 class DefaultMainScreenComponent(
@@ -46,7 +46,7 @@ class DefaultMainScreenComponent(
     onDismiss = navigation::dismiss,
     onSuccess = ::handleTaskAdded,
     onDelete = {
-      removeTask(it)
+      dayPlayer.removeTask(it)
       navigation.dismiss()
     }
   )
@@ -61,11 +61,12 @@ class DefaultMainScreenComponent(
       arg = TaskEditorFactoryData(
         componentContext = childComponentContext,
         task = config.task,
-        pos = config.pos,
-
+        pos = config.pos
         )
     )
   }
+
+  override val confirmationDialog = MutableStateFlow<ConfirmationComponent?>(null)
 
   override fun play() = dayPlayer.play()
 
@@ -73,7 +74,22 @@ class DefaultMainScreenComponent(
 
   override fun stop() = dayPlayer.stop()
 
-  override fun removeTask(atPos: Int) = dayPlayer.removeTask(atPos)
+  override fun removeTask(atPos: Int) {
+    val task = dayRepository.peek().items[atPos]
+    confirmationDialog.value = ConfirmationComponent(
+      taskName = task.name,
+      pos = atPos,
+      onDismiss = {
+        confirmationDialog.value = null
+      },
+      onConfirm = {
+        confirmationDialog.value = null
+        dayPlayer.removeTask(atPos)
+      }
+    )
+  }
+
+  override fun disableTask(atPos: Int) = dayPlayer.toggleDisabled(atPos)
 
   override fun stopCurrentTask() = dayPlayer.stopCurrentTask()
 

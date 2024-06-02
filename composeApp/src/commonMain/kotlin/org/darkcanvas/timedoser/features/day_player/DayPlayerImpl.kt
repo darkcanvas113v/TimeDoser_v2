@@ -3,7 +3,6 @@ package org.darkcanvas.timedoser.features.day_player
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import org.darkcanvas.timedoser.core.util.ticker.Ticker
 import org.darkcanvas.timedoser.data_domain.day_component.domain.DayRepository
@@ -11,6 +10,7 @@ import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Day
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 import org.darkcanvas.timedoser.features.day_player.events.DayPlayerEvent
 import org.darkcanvas.timedoser.features.day_player.mutators.addTask
+import org.darkcanvas.timedoser.features.day_player.mutators.toggleTask
 import org.darkcanvas.timedoser.features.day_player.mutators.editTask
 import org.darkcanvas.timedoser.features.day_player.mutators.moveTask
 import org.darkcanvas.timedoser.features.day_player.mutators.pause
@@ -92,9 +92,14 @@ class DayPlayerImpl(
   }
 
   override fun moveTask(from: Int, to: Int) {
-    println("Task moved from $from to $to")
     dayRepository.update { day ->
       day.moveTask(from, to)
+    }
+  }
+
+  override fun toggleDisabled(taskPos: Int) {
+    dayRepository.update { day ->
+      day.toggleTask(taskPos)
     }
   }
 

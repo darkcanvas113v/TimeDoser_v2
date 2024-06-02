@@ -15,6 +15,7 @@ import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Day
 import org.darkcanvas.timedoser.features.main_screen.MainScreenComponent
 import org.darkcanvas.timedoser.features.main_screen.models.DayUIModel
 import org.darkcanvas.timedoser.features.task_editor.ui.TaskEditor
+import org.darkcanvas.timedoser.features.task_editor.ui.comfirmation_dialog.ConfirmationDialog
 
 @Composable
 fun MainScreen(
@@ -25,6 +26,7 @@ fun MainScreen(
   }.collectAsState(initial = DayUIModel.INITIAL)
 
   val taskEditorDialog by component.taskEditorComponent.subscribeAsState()
+  val confirmationDialog by component.confirmationDialog.collectAsState(null)
 
   Surface {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -32,6 +34,8 @@ fun MainScreen(
         DefaultFragment(
           onItemClick = component::editTask,
           onItemMoved = component::moveTask,
+          onItemDisabled = component::disableTask,
+          onItemRemoved = component::removeTask,
           tasks = dayState.items
         )
       }
@@ -47,6 +51,9 @@ fun MainScreen(
 
     taskEditorDialog.child?.instance?.also {
       TaskEditor(component = it)
+    }
+    confirmationDialog?.also {
+      ConfirmationDialog(component = it)
     }
   }
 }

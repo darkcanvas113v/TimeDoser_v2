@@ -10,7 +10,7 @@ interface TaskEditorComponent {
   val task: Flow<Task>
   val isInEditMode: Boolean
 
-  val confirmationDialog: Value<ChildSlot<*, ConfirmationComponent>>
+  val confirmationDialog: Flow<ConfirmationComponent?>
 
   fun setName(name: String)
   fun setDuration(duration: Long)

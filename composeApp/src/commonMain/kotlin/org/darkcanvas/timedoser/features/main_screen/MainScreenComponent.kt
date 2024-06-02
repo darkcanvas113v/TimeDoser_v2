@@ -7,17 +7,20 @@ import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Day
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 import org.darkcanvas.timedoser.features.main_screen.models.DayUIModel
 import org.darkcanvas.timedoser.features.task_editor.TaskEditorComponent
+import org.darkcanvas.timedoser.features.task_editor.ui.comfirmation_dialog.ConfirmationComponent
 
 interface MainScreenComponent {
 
   val dayState: Flow<DayUIModel>
 
   val taskEditorComponent: Value<ChildSlot<*, TaskEditorComponent>>
+  val confirmationDialog: Flow<ConfirmationComponent?>
 
   fun play()
   fun pause()
   fun stop()
   fun removeTask(atPos: Int)
+  fun disableTask(atPos: Int)
   fun addTask()
   fun stopCurrentTask()
   fun moveTask(from: Int, to: Int)
