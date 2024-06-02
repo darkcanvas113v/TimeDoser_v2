@@ -18,8 +18,10 @@ private fun TaskItemPreview() {
         duration = 6000L,
         name = "Task",
         state = Task.State.COMPLETED,
-        progress = 0L
-      ).toUIModel(Day.State.WAITING)
+        progress = 0L,
+        intrinsicDuration = 0L
+      ).toUIModel(Day.State.WAITING),
+      onClick = {}
     )
   }
 }

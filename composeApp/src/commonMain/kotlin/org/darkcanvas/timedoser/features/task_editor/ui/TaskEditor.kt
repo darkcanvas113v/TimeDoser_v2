@@ -18,11 +18,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import org.darkcanvas.timedoser.core.util.convertMillisToStringFormat
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
 import org.darkcanvas.timedoser.features.notification_channel.LocalNotificationController
@@ -44,6 +49,7 @@ import org.darkcanvas.timedoser.features.notification_channel.NotificationContro
 import org.darkcanvas.timedoser.features.notification_channel.model.NotificationModel
 import org.darkcanvas.timedoser.features.task_editor.TaskEditorComponent
 import org.darkcanvas.timedoser.features.task_editor.model.TaskEditorErrorState
+import org.darkcanvas.timedoser.features.task_editor.ui.comfirmation_dialog.ConfirmationDialog
 
 @Composable
 fun TaskEditor(
@@ -64,6 +70,8 @@ fun TaskEditor(
     else if (task.name.isNotBlank()) taskEditorErrorState = taskEditorErrorState.copy(nameIsEmpty = false)
   }
 
+  val confirmationDialog = component.confirmationDialog.subscribeAsState()
+
   Dialog(
     onDismissRequest = component::close,
     properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -78,11 +86,27 @@ fun TaskEditor(
             .padding(vertical = 16.dp)
             .padding(horizontal = 12.dp)
         ) {
-          Text(
-            text = "EditTask",
-            style = MaterialTheme.typography.h6,
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 16.dp)
-          )
+          ) {
+            Text(
+              text = "EditTask",
+              style = MaterialTheme.typography.h6
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            if (component.isInEditMode)
+              IconButton(
+                onClick = component::delete,
+              ) {
+                Icon(
+                  imageVector = Icons.Default.Delete,
+                  contentDescription = null
+                )
+              }
+          }
 
           Column() {
             OutlinedTextField(
@@ -103,8 +127,6 @@ fun TaskEditor(
               )
             }
           }
-
-
 
           Column(
             modifier = Modifier
@@ -185,5 +207,9 @@ fun TaskEditor(
           component.setDuration(it)
         }
       )
+
+    confirmationDialog.value.child?.instance?.also {
+      ConfirmationDialog(it)
+    }
   }
 }

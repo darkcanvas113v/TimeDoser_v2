@@ -1,22 +1,50 @@
 package org.darkcanvas.timedoser.features.task_editor
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.router.slot.SlotNavigation
+import com.arkivanov.decompose.router.slot.activate
+import com.arkivanov.decompose.router.slot.childSlot
+import com.arkivanov.decompose.router.slot.dismiss
+import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.Serializable
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.Task
+import org.darkcanvas.timedoser.features.main_screen.DefaultMainScreenComponent
 import org.darkcanvas.timedoser.features.notification_channel.model.NotificationModel
+import org.darkcanvas.timedoser.features.task_editor.di.TaskEditorFactoryData
+import org.darkcanvas.timedoser.features.task_editor.ui.comfirmation_dialog.ConfirmationComponent
+import org.kodein.di.instance
 
 class DefaultTaskEditorComponent(
   componentContext: ComponentContext,
-  task: Task,
+  private val formerTask: Task,
   private val pos: Int,
   private val onDismiss: () -> Unit,
-  private val onSuccess: (Task, Int) -> Unit
+  private val onSuccess: (Task, Int) -> Unit,
+  private val onDelete: () -> Unit
 ): TaskEditorComponent, ComponentContext by componentContext {
 
-  private val _task = MutableStateFlow(task)
+  private val _task = MutableStateFlow(formerTask)
   override val task: Flow<Task> = _task
+  override val isInEditMode: Boolean = pos != -1
+
+  private val navigation = SlotNavigation<ConfirmationDialogConfig>()
+
+  override val confirmationDialog: Value<ChildSlot<*, ConfirmationComponent>> = childSlot(
+    source = navigation,
+    serializer = ConfirmationDialogConfig.serializer(),
+    handleBackButton = true
+  ) { config, childComponentContext ->
+    ConfirmationComponent(
+      taskName = config.taskName,
+      onConfirm = onDelete,
+      onDismiss = { navigation.dismiss() }
+    )
+  }
+
   override fun setName(name: String) {
     _task.update { it.copy(name = name) }
   }
@@ -38,4 +66,15 @@ class DefaultTaskEditorComponent(
   }
 
   override fun close() = onDismiss()
+  override fun delete() {
+    navigation.activate(ConfirmationDialogConfig(
+      taskName = formerTask.name)
+    )
+  }
+
+  @Serializable
+  data class ConfirmationDialogConfig(
+    val taskName: String
+  ) {
+  }
 }

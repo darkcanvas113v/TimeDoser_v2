@@ -10,16 +10,18 @@ import org.kodein.di.bindFactory
 
 fun createTaskEditorDI(
   onDismiss: () -> Unit,
-  onSuccess: (Task, Int) -> Unit
+  onSuccess: (Task, Int) -> Unit,
+  onDelete: (Int) -> Unit
 ) = DI.direct {
   bindFactory<TaskEditorFactoryData, TaskEditorComponent> {
     it.run {
       DefaultTaskEditorComponent(
         componentContext = componentContext,
-        task = task,
+        formerTask = task,
         pos = pos,
         onDismiss = onDismiss,
-        onSuccess = onSuccess
+        onSuccess = onSuccess,
+        onDelete = { onDelete(pos) }
       )
     }
   }
