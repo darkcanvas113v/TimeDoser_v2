@@ -12,7 +12,7 @@ import kotlin.math.min
 fun Day.start(): Day {
   if (state == Day.State.ACTIVE) return this
 
-  if (state == Day.State.COMPLETED || items.lastIndex == currentTaskPos) return reset()
+  if (state == Day.State.COMPLETED) return reset()
 
   val startedTask = items[currentTaskPos].start()
   var day = copy(
@@ -82,16 +82,18 @@ fun Day.toNextTask(progressAmount: Long = 0L): Day {
   }
 
   val nextTaskPos = currentTaskPos + 1
-  val nextTask = items[nextTaskPos]
+  var nextTask = items[nextTaskPos]
 
   if (nextTask.state == Task.State.DISABLED) return copy(
     currentTaskPos = nextTaskPos,
     items = items.modifyAt(nextTaskPos, nextTask.stop())
   ).toNextTask()
 
+  if (state == Day.State.ACTIVE) nextTask = nextTask.start().progress(progressAmount)
+
   return copy(
     currentTaskPos = nextTaskPos,
-    items = items.modifyAt(nextTaskPos, nextTask.start().progress(progressAmount))
+    items = items.modifyAt(nextTaskPos, nextTask)
   )
 }
 
