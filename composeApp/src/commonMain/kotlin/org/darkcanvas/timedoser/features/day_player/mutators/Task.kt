@@ -13,7 +13,7 @@ fun Task.start(): Task {
 
 fun Task.pause(): Task {
   return copy(
-    state = Task.State.PAUSED
+    state = Task.State.WAITING
   )
 }
 
@@ -24,9 +24,9 @@ fun Task.stop(): Task {
   )
 }
 
-fun Task.disable(): Task {
+fun Task.toggle(): Task {
   return copy(
-    state = Task.State.DISABLED
+    state = if (state == Task.State.DISABLED) Task.State.WAITING else Task.State.DISABLED
   )
 }
 

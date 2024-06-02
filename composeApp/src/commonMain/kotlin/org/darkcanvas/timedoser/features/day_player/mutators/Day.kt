@@ -125,7 +125,7 @@ fun Day.toggleTask(taskPos: Int): Day {
   return copy(
     items = items.modifyAt(
       pos = taskPos,
-      task.disable()
+      task.toggle()
     )
   ).updateStartTime(taskPos)
 }

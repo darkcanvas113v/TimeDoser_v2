@@ -148,7 +148,7 @@ fun TaskItem(
 @Composable
 private fun resolveTaskColor(state: Task.State): Color {
   return when (state) {
-    Task.State.WAITING, Task.State.PAUSED -> MaterialTheme.colors.primary
+    Task.State.WAITING -> MaterialTheme.colors.primary
     Task.State.ACTIVE -> LocalExtendedColors.current.active
     Task.State.COMPLETED -> LocalExtendedColors.current.completed
     Task.State.DISABLED -> LocalExtendedColors.current.disabled
