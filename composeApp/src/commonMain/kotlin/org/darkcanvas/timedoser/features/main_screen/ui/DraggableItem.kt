@@ -1,5 +1,10 @@
 package org.darkcanvas.timedoser.features.main_screen.ui
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector2D
+import androidx.compose.animation.core.TwoWayConverter
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
@@ -8,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -18,13 +24,18 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 
 private data class DragOffset(
   val x: Float = 0f,
   val y: Float = 0f,
-  val mode: Mode = Mode.Undefined
+  val mode: Mode = when {
+    abs(x) > xThreshold -> Mode.Horizontal
+    abs(y) > yThreshold -> Mode.Vertical
+    else -> Mode.Undefined
+  }
 ) {
 
   fun translate(offset: Offset): DragOffset {
@@ -39,10 +50,16 @@ private data class DragOffset(
 
     return when (newMode) {
       Mode.Vertical -> {
-        copy(y = newY)
+        copy(
+          y = newY,
+          x = 0f
+        )
       }
       Mode.Horizontal -> {
-        copy(x = newX)
+        copy(
+          x = newX,
+          y = 0f
+        )
       }
       Mode.Undefined -> {
         if (newXAbs > xThreshold) copy(
@@ -73,6 +90,11 @@ private data class DragOffset(
     const val yThreshold = 10
 
     val DEFAULT = DragOffset()
+
+    val converter = TwoWayConverter<DragOffset, AnimationVector2D>(
+      convertToVector = { AnimationVector2D(it.x, it.y) },
+      convertFromVector = { DragOffset(it.v1, it.v2) }
+    )
   }
 }
 
@@ -89,13 +111,18 @@ fun DraggableItem(
   content: @Composable () -> Unit,
 ) {
   var zIndex by remember { mutableStateOf(0f) }
-  var offset by remember { mutableStateOf(DragOffset.DEFAULT) }
   var size by remember() { mutableStateOf(IntSize.Zero) }
+  val offsetAnim = remember { Animatable(DragOffset.DEFAULT, DragOffset.converter) }
+  Offset.VectorConverter
   var dragCancelMagicNumber by remember { mutableStateOf(0) }
 
+  val scope = rememberCoroutineScope()
 
-  LaunchedEffect(offset.y) {
-    val currentOffset = (offset.y / size.height).toInt()
+
+  LaunchedEffect(offsetAnim.value.y) {
+    if (offsetAnim.isRunning) return@LaunchedEffect
+
+    val currentOffset = (offsetAnim.value.y / size.height).toInt()
     if (offsetPos != currentOffset)
       offsetChanged(currentOffset)
   }
@@ -105,16 +132,17 @@ fun DraggableItem(
       modifier = Modifier
         .onGloballyPositioned { size = it.size }
         .graphicsLayer {
-          translationX = offset.x
-          translationY = if (offset.y != 0f) offset.y else size.height * offsetPos.toFloat()
+          translationX = offsetAnim.value.x
+          translationY = if (offsetAnim.value.y != 0f) offsetAnim.value.y else size.height * offsetPos.toFloat()
         }
         .zIndex(zIndex)
         .pointerInput(dragCancelMagicNumber) {
             detectDragGesturesAfterLongPress(
               onDrag = { change, dragAmount ->
                 change.consume()
-                offset = offset.translate(dragAmount)
-                if (abs(offset.x) > 600) {
+                scope.launch { offsetAnim.snapTo(offsetAnim.value.translate(dragAmount)) }
+
+                if (abs(offsetAnim.value.x) > 600) {
                   dragCancelMagicNumber++
                 }
               },
@@ -122,17 +150,17 @@ fun DraggableItem(
                 zIndex = 2f
               },
               onDragEnd = {
-                offset = DragOffset.DEFAULT
+                scope.launch { offsetAnim.animateTo(DragOffset.DEFAULT) }
                 zIndex = 1f
                 onDragFinished(offsetPos)
               },
               onDragCancel = {
-                if (offset.x < -600)
+                if (offsetAnim.value.x < -600)
                   onSwipedToLeft()
-                else if (offset.x > 600)
+                else if (offsetAnim.value.x > 600)
                   onSwipedToRight()
 
-                offset = DragOffset.DEFAULT
+                scope.launch { offsetAnim.animateTo(DragOffset.DEFAULT) }
                 zIndex = 1f
                 onDragCancelled()
               }
