@@ -1,7 +1,9 @@
 package org.darkcanvas.timedoser.features.main_screen.ui
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,6 +25,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.darkcanvas.timedoser.data_domain.day_component.domain.model.isInteractive
 import org.darkcanvas.timedoser.features.main_screen.models.TaskUIModel
@@ -39,11 +43,6 @@ fun DefaultFragment(
 
   val state = rememberLazyListState()
   val scope = rememberCoroutineScope()
-  var firstInteractable by remember { mutableStateOf(0) }
-
-  LaunchedEffect(tasks) {
-    firstInteractable = tasks.indexOfFirst { it.state.isInteractive() }
-  }
 
   val draggableState = remember() {
     DragState(
@@ -53,6 +52,12 @@ fun DefaultFragment(
     )
   }
 
+  LaunchedEffect(tasks) {
+    draggableState.firstInteractable = tasks.indexOfFirst { it.state.isInteractive() }
+  }
+
+
+
   LazyColumn(
     state = state,
     modifier = Modifier
@@ -61,16 +66,10 @@ fun DefaultFragment(
         detectDragGesturesAfterLongPress(
           onDrag = { change, offset ->
             change.consume()
-            draggableState.onDrag(offset, firstInteractable)
+            draggableState.onDrag(offset)
           },
           onDragStart = { offset ->
-
-            val index = draggableState.getIndexForOffset(offset)
-            if (index != null && index >= firstInteractable) {
-              draggableState.onDragStart(index)
-            } else {
-              draggableState.cancelDrag()
-            }
+            draggableState.onDragStart(offset)
           },
           onDragEnd = draggableState::finishDrag,
           onDragCancel = {
@@ -111,10 +110,18 @@ class DragState(
   var currentIndex by mutableStateOf(0)
   var prevIndex by mutableStateOf(-1)
   var currentOffset by mutableStateOf(DragOffset(0f, 0f))
+  var offsetAbsolute by mutableStateOf(0f)
   val prevOffset = Animatable(DragOffset.DEFAULT, DragOffset.converter)
   var dragCancelMagicNumber by mutableStateOf(0)
 
+  var firstInteractable by mutableStateOf(0)
+
+  var overscrollJob by mutableStateOf<Job?>(null)
+
   fun finishDrag() {
+    overscrollJob?.cancel()
+
+    offsetAbsolute = 0f
     prevIndex = currentIndex
     currentIndex = -1
     scope.launch {
@@ -148,19 +155,33 @@ class DragState(
     else -> DraggableItemState()
   }
 
-  fun getIndexForOffset(offset: Offset): Int? {
+  private fun getIndexForOffset(offset: Offset): Int? {
     return lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { item -> offset.y.toInt() in item.offset..item.offset + item.size }
       ?.index
   }
 
-  fun onDragStart(index: Int) {
-    lazyListState.layoutInfo.visibleItemsInfo[index].let {
+  fun onDragStart(offset: Offset) {
+    val index = getIndexForOffset(offset)
+    if (index == null || index < firstInteractable) {
+      return cancelDrag()
+    }
+
+    lazyListState.layoutInfo.visibleItemsInfo.first { it.index == index }.let {
       currentIndex = index
       itemInfo = it
     }
+    overscrollJob = scope.launch {
+      while (true) {
+        delay(200)
+        checkForOverScroll()?.let { overscrollAmount ->
+          val scroll = lazyListState.scrollBy(overscrollAmount)
+          translate(Offset(0f, scroll))
+        }
+      }
+    }
   }
 
-  fun onDrag(offset: Offset, firstInteractable: Int) {
+  private fun translate(offset: Offset) {
     currentOffset = currentOffset.translate(offset)
 
     itemInfo?.let { info ->
@@ -182,13 +203,34 @@ class DragState(
             currentOffset.translate(Offset(0f, -itemOffset * info.size.toFloat()))
 
           prevOffset.animateTo(DragOffset.DEFAULT)
-
         }
       }
     }
+  }
+
+  fun onDrag(offset: Offset) {
+    offsetAbsolute += offset.y
+    translate(offset)
 
     if (abs(currentOffset.x) > 600) {
-      dragCancelMagicNumber++
+      cancelDrag()
+    }
+  }
+
+  fun checkForOverScroll(): Float? {
+    return itemInfo?.let {
+      val startOffset = it.offset.toFloat() + offsetAbsolute
+      val endOffset = it.offset.toFloat() + it.size + offsetAbsolute
+      val viewPortEnd = lazyListState.layoutInfo.viewportEndOffset
+      val viewPortStart = lazyListState.layoutInfo.viewportStartOffset
+
+      println("StartOffset is $startOffset, endOffset is $endOffset, viewPortStart is $viewPortStart viewPortEnd is $viewPortEnd")
+
+      when {
+        currentOffset.y > 0 -> (endOffset - viewPortEnd).takeIf { diff -> diff > 0 }
+        currentOffset.y < 0 -> (startOffset - viewPortStart).takeIf { diff -> diff < 0 }
+        else -> null
+      }
     }
   }
 }
